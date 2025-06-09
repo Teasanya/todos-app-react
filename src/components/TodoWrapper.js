@@ -8,23 +8,32 @@ import { useLocalStorage } from '../hooks/useLocalStoage';
 // uuidv4();
 
 export const TodoWrapper = () => {
-  const { addTodo, toggleComplete, deleteTodo, editTodo, editTask, todos } =
-    useLocalStorage();
+  const {
+    addTodo,
+    toggleComplete,
+    deleteTodo,
+    editTodo,
+    editTask,
+    todos,
+    moveTodo,
+  } = useLocalStorage();
 
   return (
     <div className='TodoWrapper'>
       <h1>Список дел</h1>
       <TodoForm addTodo={addTodo} />
-      {todos.map((todo) =>
+      {todos.map((todo, index) =>
         todo.isEditing ? (
           <EditTodoForm key={todo.id} editTodo={editTask} task={todo} />
         ) : (
           <Todo
             task={todo}
+            index={index}
             key={todo.id}
             toggleComplete={toggleComplete}
             deleteTodo={deleteTodo}
             editTodo={editTodo}
+            moveTodo={moveTodo}
           />
         )
       )}

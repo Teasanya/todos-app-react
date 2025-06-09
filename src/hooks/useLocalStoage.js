@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export function useLocalStorage() {
-  const [todos, setTodos] = useState([]);
-
-  useEffect(() => {
-    const savedList = localStorage.getItem('List');
-    if (savedList) {
-      setTodos(JSON.parse(savedList));
+  const [todos, setTodos] = useState(() => {
+    try {
+      const savedList = localStorage.getItem('List');
+      return savedList ? JSON.parse(savedList) : [];
+    } catch (e) {
+      console.error('Ошибка загрузки из localStorage:', e);
+      return [];
     }
-  }, []);
+  });
 
   useEffect(() => {
     localStorage.setItem('List', JSON.stringify(todos));
@@ -31,7 +32,6 @@ export function useLocalStorage() {
 
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
-    localStorage.setItem('List', JSON.stringify(todos));
   };
   const editTodo = (id) => {
     setTodos(
@@ -48,6 +48,19 @@ export function useLocalStorage() {
     );
   };
 
+  const moveTodo = (dragIndex, hoverIndex) => {
+    console.log('moving');
+    setTodos((prevTodos) => {
+      const newTodos = [...prevTodos];
+      const draggedItem = newTodos[dragIndex];
+
+      newTodos.splice(dragIndex, 1);
+      newTodos.splice(hoverIndex, 0, draggedItem);
+
+      return newTodos;
+    });
+  };
+
   return {
     todos,
     addTodo,
@@ -55,5 +68,6 @@ export function useLocalStorage() {
     deleteTodo,
     editTodo,
     editTask,
+    moveTodo,
   };
 }
